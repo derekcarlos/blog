@@ -1,29 +1,48 @@
 # Dependencies
-node_modules
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
 
-# Build output (Astro static export)
-dist
+# Build output
+dist/
+.output/
+.vercel/
+.netlify/
 
 # Astro
 .astro/
 
-# Vite (Astro 使用 Vite 构建，可能产生缓存)
+# Vite
 .vite/
+vite.config.*.timestamp-*
 
-# Environment：仅保留 .env.example 作模板，.env 不提交
+# Environment variables
 .env
 .env.local
 .env.*.local
+.env.production
+!.env.example
 
-# Cloudflare Wrangler
+# Cloudflare
 .wrangler/
 .mf/
+.dev.vars
 
-# OS
-.DS_Store
-Thumbs.db
+# Testing
+coverage/
+.nyc_output/
+*.lcov
 
-# Logs & debug
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+.turbo/
+
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -31,13 +50,36 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Editor backup / temp
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.idea/
+*.sublime-project
+*.sublime-workspace
 *~
 *.swp
 *.swo
 *.bak
+.project
+.classpath
+.settings/
 
-# Misc
-.cache
-*.tsbuildinfo
-.turbo
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
