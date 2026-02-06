@@ -52,9 +52,11 @@ jobs:
       - name: Build site
         env:
           PUBLIC_SITE_URL: ${{ secrets.PUBLIC_SITE_URL || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+          PUBLIC_BASE_PATH: ${{ secrets.PUBLIC_BASE_PATH || format('/{0}', github.event.repository.name) }}
           NODE_ENV: production
         run: |
           echo "Building site for: $PUBLIC_SITE_URL"
+          echo "Base path: $PUBLIC_BASE_PATH"
           npm run build
 
       - name: Optimize output

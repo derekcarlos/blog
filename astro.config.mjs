@@ -7,10 +7,12 @@ import { DEFAULT_LOCALE_SETTING, LOCALES_SETTING } from "./src/locales";
 
 const env = loadEnv(process.env.MODE ?? "production", process.cwd(), "");
 const siteUrl = env.PUBLIC_SITE_URL ?? "https://example.com";
+const base = env.PUBLIC_BASE_PATH ?? "";
 
 // https://astro.build/config
 export default defineConfig({
   site: siteUrl,
+  base: base,
   markdown: {
     rehypePlugins: [rehypeSlug],
     shikiConfig: {
