@@ -21,6 +21,9 @@ import {
 import heroImageEn from "@/assets/en/hero.svg";
 import heroImageZhCn from "@/assets/zh-cn/hero.svg";
 
+/** 暂时屏蔽 hero 图片展示，改为 true 可恢复 */
+const SHOW_HERO = false;
+
 const locale = Astro.currentLocale as Lang;
 const t = useTranslations(locale);
 
@@ -55,15 +58,17 @@ export const getStaticPaths = () =>
 ---
 
 <Layout>
-  <section class="hero">
-    <div class="hero-container">
-      <Image
-        src={locale === "zh-cn" ? heroImageZhCn : heroImageEn}
-        alt={t(SITE_TITLE)}
-        loading="eager"
-      />
-    </div>
-  </section>
+  {SHOW_HERO && (
+    <section class="hero">
+      <div class="hero-container">
+        <Image
+          src={locale === "zh-cn" ? heroImageZhCn : heroImageEn}
+          alt={t(SITE_TITLE)}
+          loading="eager"
+        />
+      </div>
+    </section>
+  )}
 
   <section class="intro-section">
     <div class="intro-card-wrap">
