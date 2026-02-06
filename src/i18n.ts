@@ -44,9 +44,21 @@ export function useTranslations(lang: Lang) {
  * Helper to get corresponding path list for all locales
  */
 export function getLocalePaths(url: URL): LocalePath[] {
+  // 从 pathname 中提取基础路径（移除语言代码）
+  const base = import.meta.env.BASE_URL || "/";
+  let pathname = url.pathname;
+  
+  // 移除 base path
+  if (base !== "/" && pathname.startsWith(base)) {
+    pathname = pathname.slice(base.length - 1);
+  }
+  
+  // 移除语言代码前缀
+  const pathWithoutLang = pathname.replace(/^\/[a-zA-Z-]+/, "") || "/";
+  
   return Object.keys(LOCALES).map((lang) => ({
     lang: lang as Lang,
-    path: getRelativeLocaleUrl(lang, url.pathname.replace(/^\/[a-zA-Z-]+/, "")),
+    path: getRelativeLocaleUrl(lang, pathWithoutLang),
   }));
 }
 type LocalePath = { lang: Lang; path: string };
