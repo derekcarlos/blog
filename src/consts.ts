@@ -11,13 +11,13 @@ function getEnv(key: string): string | undefined {
 
 /** 站点标题（来自 PUBLIC_SITE_TITLE_*） */
 export const SITE_TITLE: Multilingual = {
-  en: getEnv("PUBLIC_SITE_TITLE_EN") ?? "My Blog",
+  en: getEnv("PUBLIC_SITE_TITLE_EN") ?? "Our Daily Code",
   "zh-cn": getEnv("PUBLIC_SITE_TITLE_ZH_CN") ?? "我的博客",
 };
 
 /** 站点描述（来自 PUBLIC_SITE_DESCRIPTION_*） */
 export const SITE_DESCRIPTION: Multilingual = {
-  en: getEnv("PUBLIC_SITE_DESCRIPTION_EN") ?? "A personal blog built with Astro and i18n.",
+  en: getEnv("PUBLIC_SITE_DESCRIPTION_EN") ?? "A personal blog of Derek Carlos",
   "zh-cn": getEnv("PUBLIC_SITE_DESCRIPTION_ZH_CN") ?? "基于 Astro 与 i18n 的个人博客。",
 };
 
@@ -29,7 +29,7 @@ export const SITE_KEYWORDS: Multilingual = {
 
 /** 网站 slogan（来自 PUBLIC_SITE_SLOGAN_*） */
 export const SITE_SLOGAN: Multilingual = {
-  en: getEnv("PUBLIC_SITE_SLOGAN_EN") ?? "Write once, run everywhere.",
+  en: getEnv("PUBLIC_SITE_SLOGAN_EN") ?? "Deploy. Learn. Repeat.",
   "zh-cn": getEnv("PUBLIC_SITE_SLOGAN_ZH_CN") ?? "写一次，到处运行。",
 };
 
