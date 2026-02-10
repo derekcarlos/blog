@@ -1,15 +1,9 @@
 ---
 /**
  * Giscus 评论组件（基于 GitHub Discussions）
- * 默认使用 naodeng/naodeng.com.cn 的配置；可通过 .env 覆盖：
+ * 需要在 .env 中配置以下环境变量才会显示评论：
  *   PUBLIC_GISCUS_REPO、PUBLIC_GISCUS_REPO_ID、PUBLIC_GISCUS_CATEGORY、PUBLIC_GISCUS_CATEGORY_ID
  */
-const GISCUS_DEFAULTS = {
-  repo: "naodeng/naodeng.com.cn",
-  repoId: "R_kgDOHntNtg",
-  category: "Show and tell",
-  categoryId: "DIC_kwDOHntNts4Cavst",
-};
 
 interface Props {
   /** 界面语言，与 giscus 支持的语言代码一致，如 zh-CN、en */
@@ -32,10 +26,10 @@ const {
   loading = "lazy",
 } = Astro.props;
 
-const repo = (import.meta.env.PUBLIC_GISCUS_REPO as string | undefined) ?? GISCUS_DEFAULTS.repo;
-const repoId = (import.meta.env.PUBLIC_GISCUS_REPO_ID as string | undefined) ?? GISCUS_DEFAULTS.repoId;
-const category = (import.meta.env.PUBLIC_GISCUS_CATEGORY as string | undefined) ?? GISCUS_DEFAULTS.category;
-const categoryId = (import.meta.env.PUBLIC_GISCUS_CATEGORY_ID as string | undefined) ?? GISCUS_DEFAULTS.categoryId;
+const repo = import.meta.env.PUBLIC_GISCUS_REPO as string | undefined;
+const repoId = import.meta.env.PUBLIC_GISCUS_REPO_ID as string | undefined;
+const category = import.meta.env.PUBLIC_GISCUS_CATEGORY as string | undefined;
+const categoryId = import.meta.env.PUBLIC_GISCUS_CATEGORY_ID as string | undefined;
 
 const enabled = Boolean(repo && repoId && category && categoryId);
 ---

@@ -46,24 +46,24 @@ export const NOT_TRANSLATED_CAUTION: Multilingual = {
 
 // 首页简介问候语（可改为从 env 扩展）
 export const HOME_INTRO_GREETING: Multilingual = {
-  en: "Hello, I'm the author.",
+  en: "Hello, I'm Derek.",
   "zh-cn": "你好，我是本站作者。",
 };
 
 // 首页简介（模板占位，建议部署前在 consts 或通过 CMS 替换）
 export const HOME_INTRO: Multilingual = {
-  en: `- Edit **src/consts.ts** or configure \`.env\` for site info.
-- Add posts under \`src/blog/en/\` and \`src/blog/zh-cn/\`.
-- Support page: [Support](/sponsor).`,
-  "zh-cn": `- 在 **src/consts.ts** 或 \`.env\` 中配置站点信息。
-- 在 \`src/blog/en/\` 与 \`src/blog/zh-cn/\` 下添加文章。
-- 支持页：[支持我](/sponsor)。`,
+  en: `- Pronounced /dih-REK/: /dɪˈrɛk/ or /dəˈrɛk/
+- Currently working on GoldenGate projects
+- Regaining my fitness through indoor cycling
+- Threads: [@derekcarlos](https://www.threads.com/@derekcarlos)`
 };
 
 export const HOME_AUTHOR_TAGS: Multilingual[] = [
-  { en: "Blog", "zh-cn": "博客" },
-  { en: "Astro", "zh-cn": "Astro" },
-  { en: "i18n", "zh-cn": "多语言" },
+  { en: "Oracle" },
+  { en: "GoldenGate" },
+  { en: "Database" },
+  { en: "Best Practices" },
+  { en: "Implementation" },
 ];
 
 // 导航文案
@@ -148,7 +148,7 @@ export const HOME_VIEW_ALL_PROJECTS: Multilingual = {
 };
 
 export const BLOG_INTRO: Multilingual = {
-  en: "Blog articles. Edit BLOG_INTRO in **src/consts.ts**.",
+  en: "Exploring Oracle database technologies, GoldenGate implementations, and practical solutions to real-world deployment challenges. Learn from hands-on experience with Oracle products in production environments. And other things I have learned in life so far.",
   "zh-cn": "博客文章。请在 **src/consts.ts** 中修改 BLOG_INTRO。",
 };
 export const BLOG_SERIES_TITLE: Multilingual = { en: "Series", "zh-cn": "系列" };
@@ -166,7 +166,7 @@ export const PAGINATION_OF: Multilingual = { en: "of", "zh-cn": "页，共" };
 export const ABOUT_PAGE_TITLE: Multilingual = { en: "About", "zh-cn": "关于" };
 export const ABOUT_ME_TITLE: Multilingual = { en: "About Me", "zh-cn": "关于我" };
 export const ABOUT_ME_BODY: Multilingual = {
-  en: "Edit ABOUT_ME_BODY in **src/consts.ts** or use .env for author info.",
+  en: "Hello, I'm Derek. Kamusta? I am a technical consultant with 20 years of experience working with Oracle products. Recently working with GoldenGate implementations, both on-premise and on Oracle Cloud. In my free time I do endurance cycling, play *Hitman: World of Assassination* and write so that I may not forget - just like this one.",
   "zh-cn": "请在 **src/consts.ts** 中修改 ABOUT_ME_BODY，或通过 .env 配置作者信息。",
 };
 export const ABOUT_TECH_TITLE: Multilingual = { en: "Tech Stack", "zh-cn": "技术栈" };

@@ -1,10 +1,10 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { getLocalePaths, type Lang } from "@/i18n";
-import { 
-  NAV_ABOUT, 
-  NAV_PROJECTS, 
-  NAV_ARCHIVE, 
+import { getLocalePaths, type Lang, LOCALES } from "@/i18n";
+import {
+  NAV_ABOUT,
+  NAV_PROJECTS,
+  NAV_ARCHIVE,
   NAV_SPONSOR,
   NAV_SERIES,
   NAV_TAGS,
@@ -21,7 +21,8 @@ const locale = Astro.currentLocale as Lang;
 const paths = getLocalePaths(Astro.url);
 const siteOrigin = Astro.site?.toString().replace(/\/$/, "") ?? "https://example.com";
 
-const otherLocalePath = paths.find(p => p.lang !== locale)?.path || (locale === 'zh-cn' ? '/en/' : '/zh-cn/');
+const showLocaleToggle = Object.keys(LOCALES).length > 1;
+const otherLocalePath = showLocaleToggle ? (paths.find(p => p.lang !== locale)?.path || (locale === 'zh-cn' ? '/en/' : '/zh-cn/')) : '';
 
 let socialLinks: { name: string; url: string; icon: string }[] = [];
 try {
@@ -54,13 +55,15 @@ const t = {
           {link.icon === 'email' && <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>}
         </a>
       ))}
-      
-      <a href={otherLocalePath} class="social-icon lang-toggle" title={locale === 'zh-cn' ? 'Switch to English' : '切换至中文'}>
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 5.11.76-1.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
-        </svg>
-        <span class="lang-label">{locale === 'zh-cn' ? 'EN' : 'ZH'}</span>
-      </a>
+
+      {showLocaleToggle && (
+        <a href={otherLocalePath} class="social-icon lang-toggle" title={locale === 'zh-cn' ? 'Switch to English' : '切换至中文'}>
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 5.11.76-1.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+          </svg>
+          <span class="lang-label">{locale === 'zh-cn' ? 'EN' : 'ZH'}</span>
+        </a>
+      )}
     </div>
 
     <!-- 底部次级导航 -->
@@ -70,10 +73,16 @@ const t = {
       <a href={getRelativeLocaleUrl(locale, "/projects")}>{typeof NAV_PROJECTS === 'string' ? NAV_PROJECTS : NAV_PROJECTS[locale]}</a>
       <a href={getRelativeLocaleUrl(locale, "/series")}>{typeof NAV_SERIES === 'string' ? NAV_SERIES : NAV_SERIES[locale]}</a>
       <a href={getRelativeLocaleUrl(locale, "/tags")}>{typeof NAV_TAGS === 'string' ? NAV_TAGS : NAV_TAGS[locale]}</a>
+      <!-- Sponsor link hidden
       <a href={getRelativeLocaleUrl(locale, "/sponsor")}>{typeof NAV_SPONSOR === 'string' ? NAV_SPONSOR : NAV_SPONSOR[locale]}</a>
+      -->
       <a href={getRelativeLocaleUrl(locale, "/copyright")}>{typeof NAV_COPYRIGHT === 'string' ? NAV_COPYRIGHT : NAV_COPYRIGHT[locale]}</a>
+      <!-- Privacy hidden
       <a href={getRelativeLocaleUrl(locale, "/privacy")}>{typeof NAV_PRIVACY === 'string' ? NAV_PRIVACY : NAV_PRIVACY[locale]}</a>
+      -->
+      <!-- Links (Friends) hidden
       <a href={getRelativeLocaleUrl(locale, "/links")}>{typeof NAV_LINKS === 'string' ? NAV_LINKS : NAV_LINKS[locale]}</a>
+      -->
       {statusUrl && <a href={statusUrl} target="_blank" rel="noopener noreferrer">{typeof NAV_STATUS === 'string' ? NAV_STATUS : NAV_STATUS[locale]}</a>}
       {analyticsUrl && <a href={analyticsUrl} target="_blank" rel="noopener noreferrer">{typeof NAV_ANALYTICS === 'string' ? NAV_ANALYTICS : NAV_ANALYTICS[locale]}</a>}
       <a href={getRelativeLocaleUrl(locale, "/rss.xml")} target="_blank">{t.rss}</a>

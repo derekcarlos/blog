@@ -26,9 +26,8 @@ const t = useTranslations(locale);
 
 const title = t(ABOUT_PAGE_TITLE);
 
-// 技术栈徽章（与 GitHub https://github.com/naodeng 及本站项目、博客内容一致）
 const testingBadges = [
-  { alt: "Playwright", src: "https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white" },
+  { alt: "Playwright", src: "https://img.shields.io/badge/Oracle-2EAD33?style=for-the-badge&logo=playwright&logoColor=white" },
   { alt: "Selenium", src: "https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white" },
   { alt: "Cypress", src: "https://img.shields.io/badge/Cypress-17202C?style=for-the-badge&logo=cypress&logoColor=white" },
   { alt: "Postman", src: "https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" },
@@ -72,7 +71,7 @@ export const getStaticPaths = () =>
     <h2 class="section-title">{t(ABOUT_ME_TITLE)}</h2>
     <div class="prose" set:html={aboutMeHtml} />
   </section>
-
+<!--
   <section class="about-section">
     <h2 class="section-title">{t(ABOUT_TECH_TITLE)}</h2>
     <p class="tech-intro">
@@ -132,7 +131,7 @@ export const getStaticPaths = () =>
     <div class="prose" set:html={connectHtml} />
   </section>
 </Layout>
-
+-->
 <style>
   .about-section {
     margin-block-start: var(--sp-l);

@@ -16,8 +16,4 @@ export const LOCALES_SETTING: LocaleSetting = {
     label: "English",
     lang: "en-US",
   },
-  "zh-cn": {
-    label: "简体中文",
-    lang: "zh-CN",
-  },
 };

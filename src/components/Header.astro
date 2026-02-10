@@ -1,6 +1,6 @@
 ---
 import LocaleSelect from "@/components/i18n/LocaleSelect.astro";
-import { useTranslations, type Lang } from "@/i18n";
+import { useTranslations, type Lang, LOCALES } from "@/i18n";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { SITE_TITLE, SITE_SLOGAN, NAV_HOME, NAV_ABOUT, NAV_PROJECTS, NAV_ARCHIVE, NAV_SPONSOR, NAV_SEARCH, SEARCH_OPEN_HINT } from "@/consts";
 
@@ -9,13 +9,14 @@ const locale = Astro.currentLocale as Lang;
 
 const isActive = (path: string) =>
   getRelativeLocaleUrl(locale, path) === Astro.url.pathname;
+
+const showLocaleSelect = Object.keys(LOCALES).length > 1;
 ---
 
 <header class="l-header">
   <div class="site-brand">
     <h1 dir="ltr">
       <a href={getRelativeLocaleUrl(locale, "/")}>
-        <img src="/favicon.svg" alt="" class="site-logo" width="36" height="36" />
         <span>{t(SITE_TITLE)}</span>
       </a>
     </h1>
@@ -64,6 +65,7 @@ const isActive = (path: string) =>
           {t(NAV_ABOUT)}
         </a>
       </li>
+      <!-- Support/Sponsor link hidden
       <li>
         <a
           href={getRelativeLocaleUrl(locale, "/sponsor")}
@@ -72,9 +74,12 @@ const isActive = (path: string) =>
           {t(NAV_SPONSOR)}
         </a>
       </li>
-      <li class="nav-tool">
-        <LocaleSelect compact />
-      </li>
+      -->
+      {showLocaleSelect && (
+        <li class="nav-tool">
+          <LocaleSelect compact />
+        </li>
+      )}
       <li class="nav-tool">
         <button type="button" class="btn-icon" aria-label={t(NAV_SEARCH)} title={t(SEARCH_OPEN_HINT)} data-search-open>
           <span class="material-icons-sharp" aria-hidden="true">search</span>

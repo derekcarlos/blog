@@ -1,14 +1,14 @@
 :root {
   @media (prefers-color-scheme: dark) {
-    --color-theme: #ef4d1a;
-    --color-accent: #943e0d;
+    --color-theme: #06b6d4;
+    --color-accent: #0891b2;
     --color-base: #342c28;
     --color-main: #faf9f6;
     --color-caution: #ffaa2b;
   }
   @media (prefers-color-scheme: light) {
-    --color-theme: #ef4d1a;
-    --color-accent: #ffcc21;
+    --color-theme: #06b6d4;
+    --color-accent: #0891b2;
     --color-base: #faf9f6;
     --color-main: #342c28;
     --color-caution: #a80a00;
