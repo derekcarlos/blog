@@ -37,7 +37,7 @@ export const SITE_SLOGAN: Multilingual = {
 export const X_ACCOUNT: string = getEnv("PUBLIC_X_ACCOUNT") ?? "";
 
 /** 默认作者名（来自 PUBLIC_AUTHOR_NAME，用于 meta、博文 fallback） */
-export const AUTHOR_NAME: string = getEnv("PUBLIC_AUTHOR_NAME") ?? "Author";
+export const AUTHOR_NAME: string = getEnv("PUBLIC_AUTHOR_NAME") ?? "Derek Carlos";
 
 export const NOT_TRANSLATED_CAUTION: Multilingual = {
   en: "This page is not available in your language.",
