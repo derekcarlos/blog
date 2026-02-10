@@ -1,0 +1,107 @@
+---
+title: "Monitor Log Shipping between ADG Standby and Mining Databases"
+description: "SQL statements for OEM metric extensions to monitor log shipping between Oracle Active Data Guard standby and mining databases, with testing procedures."
+date: 2026-02-11T00:00:00.000Z
+tags: ["GoldenGate", "Oracle Database"]
+---
+
+There's a lot of articles out there that provides details on how to configure log shipping from ADG Standby to a Downstream Mining Database, but not much on how to monitor the log shipping. Since the Downstream Extract deployment assumes that everything is working fine from the database perspective (e.g. log shipping from primary to ADG standby to mining database) one must also learn how to identify any cracks in the process that can prevent the Downstream Extract from running.
+
+Monitoring of log shipping between Primary and ADG standby will not be discussed as this is already covered as a metric in Oracle Enterprise Manager. In this case I will be sharing how to monitor the log shipping between ADG Standby and Mining database. Unfortunately I can't see a way to monitor this through any existing metrics from OEM, so the only way I see how to do this is through an SQL-based Metric Extension.
+
+I will not discuss how to create the SQL-based Metric Extension in this article.
+
+## On Mining Database
+
+This SQL statement is to check the number of seconds has lapsed since the last archived log was received/registered:
+
+```sql
+SELECT ROUND( (SYSDATE - MAX(completion_time)) * 86400 )
+       AS sec_since_last_foreign_arch_received
+FROM   gv$foreign_archived_log
+WHERE  creator   = 'ARCH'
+AND    registrar = 'RFS'
+AND    completion_time IS NOT NULL;
+```
+
+A metric threshold can be configured such that if the returned metric value is greater than 2-3x of the normal log switch interval issue a warning, and critical if greater than 5-10x. Tune based on the workload.
+
+This SQL checks for missing sequences (gaps) in recent window:
+
+```sql
+WITH recent AS (
+  SELECT thread#, sequence#
+  FROM (
+    SELECT thread#, sequence#,
+           DENSE_RANK() OVER (PARTITION BY thread# ORDER BY sequence# DESC) AS rnk
+    FROM   gv$foreign_archived_log
+    WHERE  creator   = 'ARCH'
+    AND    registrar = 'RFS'
+  )
+  WHERE rnk <= 200
+),
+per_thread AS (
+  SELECT thread#,
+         MIN(sequence#) AS min_seq,
+         MAX(sequence#) AS max_seq,
+         COUNT(DISTINCT sequence#) AS cnt_seq
+  FROM   recent
+  GROUP  BY thread#
+)
+SELECT NVL(SUM( (max_seq - min_seq + 1) - cnt_seq ), 0) AS missing_sequences_last_200
+FROM   per_thread;
+```
+
+Interpretation:
+- `0` = no gaps detected in recently received logs
+- `>0` = at least once missing sequence in the recent range (investigate transport/registration/retention)
+
+This SQL checks if the RFS is actively receiving logs at the moment:
+
+```sql
+SELECT CASE
+         WHEN COUNT(*) > 0 THEN 1
+         ELSE 0
+       END AS rfs_receiving_now
+FROM   gv$managed_standby
+WHERE  process = 'RFS'
+AND    status  = 'RECEIVING';
+```
+
+## On Standby Database
+
+This SQL checks for any sender-side destination errors (e.g. TNS issues, etc.)
+
+```sql
+SELECT CASE
+         WHEN status = 'VALID'
+          AND error IS NULL
+          AND (gap_status = 'NO GAP' OR gap_status IS NULL)
+         THEN 0
+         ELSE 1
+       END AS mining_dest_problem
+FROM   v$archive_dest_status
+WHERE  dest_id = <DEST_ID>;
+```
+
+The `<DEST_ID>` will need to be updated depending on what `LOG_ARCHIVE_DEST_n` was configured to ship log files to Mining database.
+
+## Testing Methods
+
+The safest way to intentionally create a "log shipping problem" (so that the OEM metric extensions will fire) is to temporarily pause/disable the specific log shipping destination from the ADG standby to the Mining Database. This is reversible and doesn't require breaking networks.
+
+```sql
+ALTER SYSTEM SET log_archive_dest_<n> = DEFER;
+```
+
+Both the ADG Standby and Mining DB metrics should get triggered as soon as the logs stopped getting shipped to Mining.
+
+Re-enable the log archive destination to recover.
+
+```sql
+ALTER SYSTEM SET log_archive_dest_<n> = DEFER;
+```
+
+One other option is to test the network/service down behavior by stopping the listener on the Mining DB host or temporarily blocking the port. This requires that one has OS and firewall access, both of which could affect other databases especially if the listener and port are shared across multiple databases.
+
+We will test these SQL statements and will update this article on the results.
