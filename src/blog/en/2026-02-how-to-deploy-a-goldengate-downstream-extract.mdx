@@ -56,7 +56,7 @@ alter system switch all logfile;
 ```
 
 > [!NOTE]
-> Around 5-6 minutes after performing steps 7 and 8, the trail file size has increased. The state of the Extract in `GV$GOLDENGATE_CAPTURE` moved to `WAITING FOR TRANSACTION`
+> Around 5-6 minutes after performing steps 4 and 5, the trail file size has increased. The state of the Extract in `GV$GOLDENGATE_CAPTURE` moved to `WAITING FOR TRANSACTION`
 
 The `WAITING FOR TRANSACTION` means the Extract is now capturing committed transactions and writing them into trail file. 
 
