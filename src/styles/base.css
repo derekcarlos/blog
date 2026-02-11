@@ -5,6 +5,9 @@
     --color-base: #342c28;
     --color-main: #faf9f6;
     --color-caution: #ffaa2b;
+    --color-tip: #22c55e;
+    --color-important: #a855f7;
+    --color-warning: #f59e0b;
   }
   @media (prefers-color-scheme: light) {
     --color-theme: #06b6d4;
@@ -12,6 +15,9 @@
     --color-base: #faf9f6;
     --color-main: #342c28;
     --color-caution: #a80a00;
+    --color-tip: #16a34a;
+    --color-important: #9333ea;
+    --color-warning: #d97706;
   }
 
   --sp-l: 64px;

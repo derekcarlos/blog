@@ -33,6 +33,7 @@
     "algoliasearch": "^5.47.0",
     "astro": "^5.17.0",
     "marked": "^15.0.7",
+    "remark-github-blockquote-alert": "^2.0.1",
     "typescript": "^5.9.3"
   }
 }
