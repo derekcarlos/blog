@@ -86,6 +86,9 @@ WHERE  dest_id = <DEST_ID>;
 
 The `<DEST_ID>` will need to be updated depending on what `LOG_ARCHIVE_DEST_n` was configured to ship log files to Mining database.
 
+> [!NOTE]
+> This one might not be required to be included as a metric extension because Data Guard Status already includes a metric for checking the Log Archive Destination Status. The status `DEFERRED|ALTERNATE|FULL` are considered Warning, while `ERROR|DISABLED|BAD PARAM` are considered Critical states.
+
 ## Testing Methods
 
 The safest way to intentionally create a "log shipping problem" (so that the OEM metric extensions will fire) is to temporarily pause/disable the specific log shipping destination from the ADG standby to the Mining Database. This is reversible and doesn't require breaking networks.
@@ -105,3 +108,9 @@ ALTER SYSTEM SET log_archive_dest_<n> = DEFER;
 One other option is to test the network/service down behavior by stopping the listener on the Mining DB host or temporarily blocking the port. This requires that one has OS and firewall access, both of which could affect other databases especially if the listener and port are shared across multiple databases.
 
 We will test these SQL statements and will update this article on the results.
+
+## Updates
+
+For SQLs that use the `SYSDATE`, always check whether it uses the same timezone as the one it's being compared to (e.g. like in the first SQL where it's calculated against the `COMPLETION_TIME`). The timezone of `SYSDATE` is captured from the OS-level timezone, disregarding the timezone of the internal database workings that update the `COMPLETION_TIME`, among other date/time specific fields. If they are from different timezones the results might be erratic.
+
+Not all SQLs stated in this post is required to be added as a metric extension. As mentioned in the post, the Log Archive Destination status is already monitored and collected by the Data Guard Status so the SQL don't have to be run against the Standby database. In addition, the SQL to check the gap of sequences in the Downstream Mining Database doesn't have to be part of a metric extension too, since from a monitoring perspective, all you want to know is whether the Mining Database is receiving logs from Standby database. The last thing we want is to get alerts from multiple aspects of the log shipping process that only points to the same problem.
