@@ -172,10 +172,18 @@ export const getStaticPaths = () =>
     font-weight: 600;
   }
   .prose :global(ul) {
-    padding-inline-start: 1.2em;
+    list-style-type: disc;
+    padding-inline-start: 1.5em;
+    margin-block: 0.5em 0;
+  }
+  .prose :global(ol) {
+    list-style-type: decimal;
+    padding-inline-start: 1.5em;
+    margin-block: 0.5em 0;
   }
   .prose :global(li) {
-    margin-block: 0.25em;
+    margin-block: 0.35em;
+    line-height: 1.6;
   }
   .prose :global(a) {
     color: var(--color-theme);

@@ -52,10 +52,12 @@ export const HOME_INTRO_GREETING: Multilingual = {
 
 // 首页简介（模板占位，建议部署前在 consts 或通过 CMS 替换）
 export const HOME_INTRO: Multilingual = {
-  en: `- Pronounced /dih-REK/: /dɪˈrɛk/ or /dəˈrɛk/
-- Currently working on GoldenGate projects
-- Regaining my fitness through indoor cycling
-- Threads: [@derekcarlos](https://www.threads.com/@derekcarlos)`
+  en: `
+  - Pronounced /dih-REK/: /dɪˈrɛk/ or /dəˈrɛk/
+  - Currently working on GoldenGate projects
+  - Regaining my fitness through indoor cycling
+  - Threads: [@derekcarlos](https://www.threads.com/@derekcarlos)
+  - Check the [About](/about) page to learn more about this blog.`
 };
 
 export const HOME_AUTHOR_TAGS: Multilingual[] = [
@@ -164,10 +166,16 @@ export const PAGINATION_PAGE: Multilingual = { en: "Page", "zh-cn": "第" };
 export const PAGINATION_OF: Multilingual = { en: "of", "zh-cn": "页，共" };
 
 export const ABOUT_PAGE_TITLE: Multilingual = { en: "About", "zh-cn": "关于" };
-export const ABOUT_ME_TITLE: Multilingual = { en: "About Me", "zh-cn": "关于我" };
+export const ABOUT_ME_TITLE: Multilingual = { en: "About Me and This Blog", "zh-cn": "关于我" };
 export const ABOUT_ME_BODY: Multilingual = {
-  en: "Hello, I'm Derek. Kamusta? I am a technical consultant with 20 years of experience working with Oracle products. Recently working with GoldenGate implementations, both on-premise and on Oracle Cloud. In my free time I do endurance cycling, play *Hitman: World of Assassination* and write so that I may not forget - just like this one.",
-  "zh-cn": "请在 **src/consts.ts** 中修改 ABOUT_ME_BODY，或通过 .env 配置作者信息。",
+  en: `Hello, I'm Derek. _Kamusta_?
+  I am a technical consultant with 20 years of experience working with Oracle products.
+
+  I am writing this blog for myself, for I want to have a blog that can document what I have learned, at least for the last 5 years or so. I am doing this because as I grow older there are things that I can no longer retain in my memory and if I simply let those things undocumented, I will go through the process of learning them all over again.
+
+  I need a blog that displays the code snippets and commands that I use in a presentable manner, so that I can simply copy and paste them the next time I need to use them. My skills have grown mostly by reading other technical blogs like this and I wish to present my version of a technical blog that can also help other people in their pursuit for knowledge.
+
+  This is not for me to say that all posts here will be correct, for I know that I will find a better way to do things. With that in mind, I will try to keep the posts here updated to ensure that they are up to date to the best practices and help others who would stumble upon this little place of mine in the Internet.`,
 };
 export const ABOUT_TECH_TITLE: Multilingual = { en: "Tech Stack", "zh-cn": "技术栈" };
 export const ABOUT_TECH_TESTING: Multilingual = {
