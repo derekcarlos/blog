@@ -1,0 +1,31 @@
+---
+title: "RMAN Archive Log Deletion Policy for Downstream Extract Deployment"
+description: "Configure RMAN deletion policies to ensure archived logs are properly deleted without being blocked by GoldenGate downstream Extract processes."
+date: 2026-02-12T00:00:00.000Z
+tags: ["Oracle Database", "GoldenGate"]
+---
+
+We have one customer who has been operating multiple Oracle databases in the past, but this is their first time to configure and manage a Mining database which is required for the Downstream Extract deployment. They tried using the same RMAN policy on the Source that ships logs to Mining Database, but they are getting the following message:
+
+```
+RMAN-08120: WARNING: archived log not deleted, not yet applied by standby
+```
+
+The RMAN policy that they use for deleting archived logs is as follows:
+
+```sql
+CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON ALL STANDBY BACKED UP 1 TIMES TO 'SBT_TAPE';
+```
+
+This means after the archived log will be deleted once it has been backed up to another media (in this case `SBT_TAPE`). This policy require RMAN to wait until the archived log is applied on all archived log destinations, which includes the Downstream Mining Database. However, this would never be the case in Mining Database as the archived logs are never applied.
+
+To solve this the RMAN policy must be updated as follows:
+
+```sql
+CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON STANDBY BACKED UP 1 TIMES TO 'SBT_TAPE';
+
+-- or
+
+CONFIGURE ARCHIVELOG DELETION POLICY TO SHIPPED TO STANDBY BACKED UP 1 TIMES TO 'SBT_TAPE';
+```
+
