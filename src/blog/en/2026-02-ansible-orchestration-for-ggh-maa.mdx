@@ -1,0 +1,21 @@
+---
+title: "Automate GoldenGate Hub MAA Deployment using Ansible"
+description: "Oracle GoldenGate has released an Ansible collection to automate GoldenGate Hub Platinum MAA deployment, covering 80% of the manual steps. Learn how to adapt the playbook for active-active setups without ACFS replication."
+date: 2026-02-19T00:00:00.000Z
+tags: ["Ansible", "GoldenGate"]
+---
+
+Oracle GoldenGate updated their documentation on High Availability for configuring GoldenGate Hub to use Ansible to automate its deployment, and released the Ansible collection that can be used to deploy the said configuration.
+
+OGG already provides a comprehensive documentation of steps on how to deploy GGH using Platinum Maximum Availability Architecture (MAA), but that consists of numerous steps that must be executed from different users (e.g. oracle, grid, root). I am really excited that they released an Ansible playbook that we can use to automate all these steps.
+
+Well not all steps - but I would say 80% of the steps are already written in Ansible.
+
+The good thing with this playbook is that you can adjust it based on your requirements. In my case, our replication design consists of an active-active setup, where there will be a two-node RAC GGH on both sites independently replicating data to their own copy of target database. This will not require ACFS replication across sites, which is part of the original design that the Ansible playbook comes with.
+
+I will update this blog with any learnings on my actual deployment.
+
+## References
+
+- [Configuring Oracle GoldenGate Hub](https://docs.oracle.com/en/database/oracle/oracle-database/19/haovw/premises-configuring-oracle-goldengate-hub.html)
+- Oracle Support: KB858669 - Oracle GoldenGate Hub for Platinum Maximum Availability Architecture (MAA) 
