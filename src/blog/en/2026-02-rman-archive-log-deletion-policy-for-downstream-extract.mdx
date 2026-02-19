@@ -5,27 +5,33 @@ date: 2026-02-12T00:00:00.000Z
 tags: ["Oracle Database", "GoldenGate"]
 ---
 
-We have one customer who has been operating multiple Oracle databases in the past, but this is their first time to configure and manage a Mining database which is required for the Downstream Extract deployment. They tried using the same RMAN policy on the Source that ships logs to Mining Database, but they are getting the following message:
+I have a customer who's having trouble purging archived logs from their Standby database, all while shipping logs to a Downstream Mining Database for GoldenGate Downstream Extract CDC process. I am still in the process of understanding whether this is a setup issue rather than a product issue.
 
-```
-RMAN-08120: WARNING: archived log not deleted, not yet applied by standby
-```
-
-The RMAN policy that they use for deleting archived logs is as follows:
+The customer has the following RMAN deletion policy:
 
 ```sql
-CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON ALL STANDBY BACKED UP 1 TIMES TO 'SBT_TAPE';
+Primary - CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON ALL STANDBY BACKED UP 1 TIMES TO 'SBT_TAPE';
+Standby - CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON STANDBY;
 ```
 
-This means after the archived log will be deleted once it has been backed up to another media (in this case `SBT_TAPE`). This policy require RMAN to wait until the archived log is applied on all archived log destinations, which includes the Downstream Mining Database. However, this would never be the case in Mining Database as the archived logs are never applied.
+The RMAN on Primary DB gets triggered by any of the following conditions:
 
-To solve this the RMAN policy must be updated as follows:
+1. Daily for incremental backups
+2. FRA exceeds 50%
+3. FRA exceeds 80-90% - where it indiscriminately purges archived logs regardless whether GoldenGate still needs them or not
+
+Ideally we don't want to reach scenario 3 so it would be nice if we can help maintain the space up until scenario 2.
+
+I am not familiar with the inner workings of RMAN, so I am just learning all this today. In an ideal situation, when the RMAN process kicks off at the Primary database, it will back up logs to tape and purge the files from FRA. This applies to both Primary and Standby databases. But what happens when the Standby database also ships logs to Downstream Mining Database?
+
+My theory is that the Standby RMAN policy will never be true because the archived logs shipped to Downstream Mining Database will never get applied. Although I don't know how true this is, because I can see records in Standby's `GV$ARCHIVED_LOG` table where logs shipped to the Mining Database has `APPLIED = YES`, which is odd.
+
+Anyway, if you disregard that weird rebuttal I just made to my own theory, the following RMAN policy might work if applied on Standby database:
 
 ```sql
-CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON STANDBY BACKED UP 1 TIMES TO 'SBT_TAPE';
-
--- or
-
-CONFIGURE ARCHIVELOG DELETION POLICY TO SHIPPED TO STANDBY BACKED UP 1 TIMES TO 'SBT_TAPE';
+CONFIGURE ARCHIVELOG DELETION POLICY TO SHIPPED TO ALL STANDBY;
 ```
 
+Will that work? Maybe. The question now is whether the customer would want it to run that way.
+
+As always, I'll update this post as soon as I find something useful.
