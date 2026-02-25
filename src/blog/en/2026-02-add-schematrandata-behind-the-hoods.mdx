@@ -1,0 +1,108 @@
+---
+title: "What Does ADD SCHEMATRANDATA Actually Do?"
+description: "A deep dive into what Oracle GoldenGate executes under the hood when you run ADD SCHEMATRANDATA - tracing session activity to uncover the package chain and where the metadata actually lives."
+date: 2026-02-25T00:00:00.000Z
+tags: ["GoldenGate", "Oracle"]
+---
+
+> **Credit:** The investigation and findings described in this post originate from Bobby Curtis's original research published at [DBASolved.com](https://www.dbasolved.com/2016/08/digging-into-add-schematrandata-where-goldengate-is-going/). This is my paraphrased version with additional formatting to help me internalize what's happening.
+
+---
+
+Most GoldenGate DBAs are comfortable running `ADD SCHEMATRANDATA` and moving on. It enables supplemental logging at the schema level - done. But what is Oracle *actually doing* when you run that command? It turns out the answer is less obvious than you'd expect, and it reveals something interesting about the relationship between GoldenGate and Oracle Streams.
+
+## The Difference From ADD TRANDATA
+
+When you run `ADD TRANDATA` on a specific table, you can verify the result by querying `ALL_LOG_GROUPS` or `DBA_LOG_GROUPS`. You'll see supplemental log groups (SLGs) created on the table - tangible, queryable proof.
+
+`ADD SCHEMATRANDATA` behaves differently. **It doesn't create any supplemental log groups.** You won't find entries in `ALL_LOG_GROUPS` after running it. So where does the metadata go?
+
+## Tracing the Session
+
+To find out what Oracle is doing, you can trace the GoldenGate user's database session while `ADD SCHEMATRANDATA` executes, then analyze the trace with TKPROF.
+
+First, find the GoldenGate user's session:
+
+```sql
+SELECT 'exec dbms_monitor.session_trace_enable(session_id=>'
+       || sid
+       || ', serial_num=>'
+       || serial#
+       || ', binds=>true, waits=true)'
+FROM v$session
+WHERE username = 'GGATE';
+```
+
+Enable tracing on that session:
+
+```sql
+EXEC dbms_monitor.session_trace_enable(
+  session_id => 156,
+  serial_num => 15799,
+  binds      => true,
+  waits      => true
+);
+```
+
+Now run `ADD SCHEMATRANDATA` from GGSCI, then disable tracing:
+
+```sql
+EXEC dbms_monitor.session_trace_disable(
+  session_id => 156,
+  serial_num => 15799
+);
+```
+
+Process the resulting trace file with TKPROF:
+
+```bash
+tkprof src12c_ora_23267.trc src12c_ora_23267.tkprofs
+```
+
+## What the Trace Reveals
+
+Analyzing the TKPROF output shows a chain of PL/SQL package calls. The entry point is:
+
+```sql
+sys.dbms_capture_adm.PREPARE_SCHEMA_INSTANTIATION('soe', 'ALLKEYS_OFF')
+```
+
+That's a `DBMS_CAPTURE_ADM` call - not a GoldenGate-specific package. This is Oracle Streams territory. The call chain goes deeper:
+
+1. **`DBMS_CAPTURE_ADM.PREPARE_SCHEMA_INSTANTIATION`** - the public entry point; validates parameters and hands off
+2. **`DBMS_CAPTURE_ADM_IVK.PREPARE_SCHEMA_INST_IVK`** - an internal invoker package that processes the arguments
+3. **`DBMS_CAPTURE_ADM_INTERNAL.PREPARE_SCHEMA_INSTANTIATION`** - iterates over all tables in the schema and prepares each one
+4. **`PREPARE_TABLE_INST`** - the workhorse; calls a C library function named `knlcpreptabinst` to actually configure the supplemental logging
+
+Along the way, several other packages are invoked: `DBMS_XSTREAM_GG_ADM`, `DBMS_LOGREP_UTIL`, `DBMS_STREAMS_ADM`, `DBMS_UTILITY`, `DBMS_SYSTEM`, and `DBMS_FLASHBACK`. The breadth of packages confirms the observation: **Oracle is merging GoldenGate into Oracle Streams at the infrastructure level.**
+
+If you ever need to abort a schema instantiation mid-process, the call is:
+
+```sql
+sys.dbms_capture_adm.ABORT_SCHEMA_INSTANTIATION('soe')
+```
+
+## Where the Metadata Lives
+
+Since no supplemental log groups are created, the metadata ends up in the **data dictionary through LogMiner**. Two queries let you verify that supplemental logging is active after running `ADD SCHEMATRANDATA`.
+
+Check at the schema level:
+
+```sql
+SELECT *
+FROM LOGMNR$SCHEMA_ALLKEY_SUPLOG
+WHERE allkey_suplog = 'YES';
+```
+
+Check at the table/column level:
+
+```sql
+SELECT *
+FROM TABLE(logmnr$always_suplog_columns('SOE', 'ORDERS'));
+```
+
+If `ADD SCHEMATRANDATA` ran successfully, these queries will return results for your schema and tables. The absence of entries in `ALL_LOG_GROUPS` is intentional - the metadata pathway is entirely different.
+
+## Takeaway
+
+`ADD SCHEMATRANDATA` is not just a GoldenGate command. Under the hood it delegates to Oracle's Streams infrastructure via `DBMS_CAPTURE_ADM`, which ultimately calls a C-level kernel function to configure supplemental logging. The result is stored in LogMiner's data dictionary rather than in the traditional log group catalog. If you're troubleshooting why your schema-level supplemental logging doesn't show up in `ALL_LOG_GROUPS`, this is why - you're looking in the wrong place.
